@@ -1,0 +1,143 @@
+{
+  "id":0,
+  "title": "Demo Novel",
+  "variables": {
+    "narratorHappiness" : 0,
+    "triggeredChoiceA" : false,
+    "triggeredChoiceB" : false
+  },
+  "scenes" : [
+    {
+      "id" : 0,
+      "background": "./demo/rose-blue-flower-rose-blooms-67636.jpeg",
+      "music":"",
+      "dialogues" : [
+        {
+          "id":0,
+          "speaker_id":0,
+          "lines": [
+            {
+              "mood":0,
+              "text": "Once upon a time in a faraway land, two neighboring states waged war."
+            },
+            {
+              "mood":0,
+              "text": "When the war ended, all the people were poor and had nothing left, until one day a girl found a blue rose growing amongst the barren soil."
+            },
+            {
+              "mood":0,
+              "text": "The blue rose was so rare and beautiful, she carefully dug up an offshoot, scratching herself with thorns. She brought it home and planted it in a small pot."
+            },
+            {
+              "mood":0,
+              "text": "The rose started wilting, on the brink of dying. The girl, desperate and sad, started experimenting with the water levels and fertilizer. She found a way to make the rose grow upright in her family's ancient garden."
+            },
+            {
+              "mood":0,
+              "text": "Before she knew it, the rose became a wonderful shrub. Then she started a business selling blue roses. Word of mouth spread, and the village became famous far and wide. Travelers came from all corners of the earth to see for themselves the existence of blue roses."
+            }
+          ]
+        },
+        {
+          "id":1,
+          "speaker_id":1,
+          "lines": [
+            {
+              "mood":3,
+              "text": "SHUTUP NARRATOR, you're so boring!"
+            },
+            {
+              "mood":3,
+              "text": "Let me take over..."
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "id" : 1,
+      "background": "./demo/pexels-photo-326055.jpeg",
+      "dialogues" : [
+        {
+          "id":0,
+          "speaker_id":0,
+          "lines": [
+            {
+              "mood":0,
+              "text": "Suddenly the scene changed and we're in a peaceful, magical forest."
+            }
+          ]
+        },
+        {
+          "id":1,
+          "speaker_id":1,
+          "lines": [
+            {
+              "mood":0,
+              "text": "This is a flashback to before the civil war."
+            }
+          ]
+        },
+
+        {
+          "id":2,
+          "speaker_id":0,
+          "lines": [
+            {
+              "mood":0,
+              "text": "Here's a question: Was the king wrong for bringing prisoners from a foreign nation instead of using his own citizens for labor?"
+            }
+          ],
+          "choices": [
+            {
+              "condition": null,
+              "text": "Of course! That's just slavery and exploitation in disguise. Hostile relations with the other nation caused war.",
+              "effect": {"triggeredChoiceA" : true}
+            },
+            {
+              "condition": null,
+              "text": "It was necessary. Making sure your own country prosperous is the foremost goal of any kingdom.",
+              "effect": {"triggeredChoiceB" : true}
+            }
+          ]
+        },
+        {
+          "id":3,
+          "speaker_id":0,
+          "condition": ["triggeredChoiceA", true, "=="],
+          "lines": [
+            {
+              "mood":1,
+              "text": "Choice A, eh? Excellent. We will proceed."
+            }
+          ]
+        },
+        {
+          "id":4,
+          "speaker_id":0,
+          "condition":["triggeredChoiceB", true, "=="],
+          "effect":["end"],
+          "lines": [
+            {
+              "mood":4,
+              "text": "Wrong choice. Time for you to die."
+            }
+          ]
+        },
+        {
+          "id":3,
+          "speaker_id":0,
+          "flags":[0],
+          "lines": [
+            {
+              "mood":1,
+              "text": "Now that I know you're of the same opinion as me, this is the end."
+            }
+          ]
+        }
+      ]
+    }
+
+  ]
+}

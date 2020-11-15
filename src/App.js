@@ -1,26 +1,44 @@
 import React from 'react';
-import logo from './logo.svg';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useParams
+} from "react-router-dom";
+import Scene from './views/Scene';
+import NovelPage from './views/NovelPage';
+import GraphTest from './views/GraphTest';
+import Store from 'store';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(){
+    super();
+    this.state = {
+
+    }
+  }
+
+
+
+  render() {
+    return (
+      <Router>
+        <Switch>
+          <Route path="/edit">
+          <div id="container">
+            <GraphTest />
+          </div>
+          </Route>
+          <Route exact path="/">
+            <Scene />
+          </Route>
+          <Route exact path="/novel" component={NovelPage} />
+        </Switch>
+    </Router>
+  );}
 }
 
 export default App;
