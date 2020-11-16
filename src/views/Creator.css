@@ -1,0 +1,9 @@
+.creator-top-wrapper{
+  display:flex;
+  flex-flow:row nowrap;
+}
+
+.creator-workspace{
+  min-height:100vh;
+  width:50vw;
+}

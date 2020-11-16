@@ -1,9 +1,15 @@
 :root{
   --buttonTextColor:white;
+
+  --menuHeight:4rem;
+  --footerMarginBottom:6vh;
+}
+
+* {
+  line-height: 1.5;
 }
 
 body {
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -15,4 +21,28 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+main.offset{
+  margin-top:var(--menuHeight);
+}
+
+
+@media screen and (min-aspect-ratio: 8/5) and (orientation:portrait){
+}
+
+@media screen and (max-width: 1024px) {
+     /* start of large tablet styles */
+}
+
+@media screen and (max-width: 767px) {
+     /* start of medium tablet styles */
+}
+
+@media screen and (max-width: 479px), screen and (max-height: 479px)  {
+
+}
+
+@media screen and (max-height: 479px) {
+     /* horizontal phone layout */
 }

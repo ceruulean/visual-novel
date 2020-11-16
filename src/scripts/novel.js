@@ -1,44 +1,40 @@
-import Graph from './graph';
-import Condition from './evaluator';
+import {WeightedGraph, Connector, Node, UniqueIDObject} from './graph';
+import Evaluator from './evaluator';
 import {plainToClass, classToPlain, classToClass} from "class-transformer";
 
-class WeightedGraph extends Graph{
-  constructor(){
-    super()
-    this.root = null;
-  }
 
-  setRoot(node) {
-    this.root = node;
-  }
+class Path extends Connector {
+ constructor(source, target){
+  super(source, target);
+  this.conditions = [];
+ }
 
-  addEdge(from, to, conditions){
-    let index = this.hasNode(to);
-    if (index === -1) {
-      this.addNode(to);
-    }
-    let content = this.adjList[from];
-    let edgeEntry = this.__generateEdge(from, to, conditions);
-    if (content === undefined) {
-      content = [edgeEntry];
-    } else {
-      content.push(edgeEntry);
-    }
+ addCondition(){
+  //this.conditions = new Evaluator.Condition(conditions);
+ }
 
-    this.adjList[from] = content;
+ get hasConditions(){
+  return (this.conditions != null && this.conditions != undefined)
   }
+}
 
-  updateEdge(from, to, conditions){
-    this.adjList[from] = this.__generateEdge(from, to, conditions);
-  }
+// class Effect{
+//   constructor(effectObject){
+//     this.effects = [];
+//     let vars = Object.keys(effectObject);
+//     let effects = Object.values(effectObject);
+//   }
 
-  __generateEdge(source, target, conditions) {
-    return new Connector(source, target, conditions);
-  }
+//   applyTo(variables){
+//     let temp = {}
+//     Object.assign(temp, variables);
 
-  get connections(){ //for graph display
-    return this.edges.map((cnctr)=>{return cnctr.connectionEdge})
-  }
+//     return temp
+//   }
+// }
+
+/**REVIVORSREVIVORSREVIVORSREVIVORSREVIVORSREVIVORSREVIVORSREVIVORSREVIVORS
+ 
 
   toJSON(){
     let test = classToPlain(this);
@@ -65,44 +61,43 @@ class WeightedGraph extends Graph{
     return newGraph;
   }
 
-}
+ */
 
-class Connector{
-  constructor(source, target, conditions){
-    this.conditions = new Condition.Condition(conditions);
-    this.from = source;
-    this.to = target;
-  }
 
-  get hasConditions(){
-    return (this.conditions != null && this.conditions != undefined)
-  }
-
-  get connectionEdge(){
-    return {from: this.from, to: this.to}
-  }
-}
 /**
  * For the creation and editing of a Visual Novel object
  */
+
 class Novel extends WeightedGraph {
   constructor(title, author, variables){
-    super([]);
+    super();
     this.title = title;
     this.author = author;
-    this.variables = variables;
-    this.characters = [];
+    this.variables = variables? variables: {};
+    this.actors = [];
 
-    let c = new Condition.Condition("(1 >= 2)");
+    //A novel always has 1 default character that cannot be deleted or changed.
+    this.narrator = new Actor('NARRATOR');
+    Object.freeze(this.narrator);
+
+    let c = new Evaluator.Condition("(1 >= 2)");
     console.log(c);
   }
 
-  addVariable(keyName) {
-    this.variables.push(keyName);
+  /**Editable by users of the site/ exposed to creators */
+  static WRITABLE_PROPS = ['title','author', 'Actors', 'variables']
+
+  addVariable(keyName, defaultVal) {
+    Object.defineProperty(this.variables, keyName, {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: defaultVal
+    })
   }
 
   removeVariable(keyname) {
-    this.variables = this.variables.filter(v => {return v != keyname});
+    delete this.variables[keyname];
   }
 
   addScene(title, scene){
@@ -123,6 +118,20 @@ class Novel extends WeightedGraph {
     return this.nodes;
   }
 
+  /**
+   * Returns all dialogue objects.
+   */
+  get dialogues(){
+
+  }
+
+  /**
+   * Returns all line objects.
+   */
+  get lines(){
+
+  }
+
   scene(ID){
     return this.nodes.find(n => {return n.id === ID}).data;
   }
@@ -135,64 +144,77 @@ class Novel extends WeightedGraph {
     this.removeEdge(fromID, toID);
   }
 
-  addCharacter(character) {
-    if (character instanceof Character) {
-      this.characters.push(character);
+  addActor(Actor) {
+    if (Actor instanceof Actor) {
+      this.Actors.push(Actor);
       return
     }
-    throw new Error("addCharacter: Must pass Character object")
+    throw new Error("addActor: Must pass Actor object")
   }
 
   /**
-   * @param {String} name required, name of character
+   * @param {String} name required, name of Actor
    * @param {Array} images optional, array of images for various expressions
    */
-  createCharacter(name, images) {
-    this.characters.push(new Character(name));
+  createActor(name, images) {
+    this.Actors.push(new Actor(name));
   }
 
   revive(plain){
     let newGraph = plainToClass(Novel, plain);
     this.__reviveAdjList(newGraph, plain);
-    //revive object to Character class
-    let charList = newGraph.characters.map((char)=> {
-      return plainToClass(Character, char);
+    //revive object to Actor class
+    let charList = newGraph.Actors.map((char)=> {
+      return plainToClass(Actor, char);
     })
-    newGraph.characters = charList;
+    newGraph.Actors = charList;
     return newGraph;
   }
 
 }
 
-class Scene{
-
-  constructor(bgImg, music){
-    this.background = bgImg;
-    this.music = music;
-    this.dialogueTree = new DialogueTree(this);
+class Scene extends Node{
+  constructor(title){
+    super()
+    this.title = title;
+    this.backgroundURI = null;
+    this.musicURI = null;
+    this.dialogueTree = null //new DialogueTree(this);
+    this.effect = null;
   }
+
+  /**Editable by users of the site/ exposed to creators */
+  static WRITABLE_PROPS = ['title','backgroundURI', 'music', 'dialogueTree', 'effect']
 
   static FLAGS = {
     0:'END'
   }
   setBackground(src){
-    this.background = src;
+    this.backgroundURI = src;
+  }
+
+  get background(){
+    return this.backgroundURI;
   }
 
   setMusic(src){
-    this.music = src;
+    this.musicURI = src;
+  }
+
+  get music(){
+    return this.musicURI;
   }
 
   dialogue(ID){
     return this.nodes.find(n => {return n.id === ID}).data;
   }
 
-  addDialogue(dialogue){
+  createDialogueTree(dialogue){
     this.dialogueTree.addNode(dialogue)
   }
 
   createDialogue(speaker, mood, text, effect, choices){
-    this.dialogueTree.addNode(speaker, new Dialogue(speaker, mood, text, effect, choices));
+    //this.dialogueTree.addNode(speaker, new Dialogue(speaker, mood, text, effect, choices));
   }
 
   removeDialogue(dialogue){
@@ -213,67 +235,8 @@ class Scene{
   
 }
 
-class DialogueTree extends WeightedGraph{
-  constructor(){
-    super([]);
-  }
 
-  revive(plain){
-    let newGraph = plainToClass(DialogueTree, plain);
-    this.__reviveAdjList(newGraph, plain);
-
-    //revive node objects to Dialogue class
-    let diagList = newGraph.nodes.map((node)=> {
-      return {...node, data:plainToClass(Dialogue, node.data)};
-    })
-    newGraph.nodes = diagList;
-    return newGraph;
-  }
-}
-
-class Dialogue {
-  constructor(speaker, mood, text, effect, choices){
-    this.speaker = speaker
-    this.mood = mood;
-    this.text = text;
-    this.choices = choices;
-    this.effect = effect;
-  }
-
-  setText(text){
-    this.text = text;
-  }
-
-  setMood(mood){
-    this.mood = mood;
-  }
-
-  get expression() {
-    return this.mood;
-  }
-
-  addChoice(displayText, toDialogueNodeID){
-    this.choices[toDialogueNodeID] = displayText;
-  }
-
-  removeChoice(toDialogueNodeID){
-    delete this.choices[toDialogueNodeID];
-  }
-
-  setEffect(effect){
-    this.effect = effect;
-  }
-
-  removeEffect(){
-    this.effect = [];
-  }
-
-  clone(){
-    return classToClass(this);
-  }
-}
-
-class Character{
+class Actor extends UniqueIDObject{
   static defaultMoods = {
     NEUTRAL: 0,
     HAPPY: 1,
@@ -288,8 +251,9 @@ class Character{
     BORED: 10
   }
   constructor(name){
+    super();
     this.name = name;
-    this.moods = {}
+    this.moods = {};
   }
 
   changeName(newName){
@@ -301,8 +265,8 @@ class Character{
   }
 
   setMoods(images){
-    for (let i = 0; i < Character.defaultMoods.length; i++) {
-      this.moods[Character.defaultMoods[i]] = images[i];
+    for (let i = 0; i < Actor.defaultMoods.length; i++) {
+      this.moods[Actor.defaultMoods[i]] = images[i];
     }
   }
 
@@ -319,14 +283,25 @@ class Character{
   }
 }
 
-// class NovelReader {
-//   constructor(novelJSON){
-//     this.novel = require('./demoNovel.json');
-//     this.sceneIterator = {
+
+
+class NovelReader {
+  constructor(novel, saveData){
+    this.saveData = saveData;
+    this.novel = novel;
+    this.sceneIterator = {
 
       
-//     }
-//   }
-// }
+    }
+  }
+}
+
+/**
+ * Effect is a functional. Example can be an object like
+ * {variable: true
+ *  variable2: '+= 1',
+ * varable3: '=69'}
+ */
+
 
 export default {Novel, Connector}

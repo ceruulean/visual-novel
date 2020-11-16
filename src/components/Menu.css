@@ -1,0 +1,16 @@
+nav.main{
+  position:fixed;
+  top:0;
+  background-color:white;
+  z-index:99;
+  height:var(--menuHeight);
+}
+
+nav.main ul{
+  display:flex;
+  flex-flow:row wrap;
+}
+
+nav.main li{
+  padding:0 0.5rem;
+}

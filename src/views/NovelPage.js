@@ -10,9 +10,9 @@ class NovelPage extends React.Component {
 
   render() {
     return (
-      <div>
+      <main className="offset">
         <h3>Seriously under construction...</h3>
-      </div>
+      </main>
       );
   }
 }

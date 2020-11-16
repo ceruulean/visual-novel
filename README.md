@@ -2,7 +2,7 @@
 - NovelReader class to iterate over parts. Then can check for conditionals
 - Define gameloop
 - Develop data structure for editing
-- Savefiles
+- Savefiles and tracking the path through the VN
 - UI
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
